@@ -45,7 +45,7 @@ export default async function Dashboard() {
               Status:
               <span
                 className={`${
-                  order.status === "Completed" ? "bg-teal-500" : "bg-orange-500"
+                  order.status === "Completed" ? "bg-green-500" : "bg-red-500"
                 } text-white py-1 rounded-md px-2 mx-2 text-xs`}
               >
                 {order.status}
