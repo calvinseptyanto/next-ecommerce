@@ -8,13 +8,16 @@ import {
 } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(`${process.env.PUBLISHABLE_KEY}`);
 export default function Checkout() {
   const cartStore = useCartStore();
+  const router = useRouter();
   const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
+    //Create a paymentIntent as soon as the page loads up
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -22,6 +25,21 @@ export default function Checkout() {
         items: cartStore.cart,
         payment_intent_id: cartStore.paymentIntent,
       }),
-    });
+    })
+      .then((res) => {
+        if (res.status === 403) {
+          return router.push("/api/auth/signin");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setClientSecret(data.paymentIntent.client_secret);
+        cartStore.setPaymentIntent(data.paymentIntent.id);
+      });
   }, []);
+  return (
+    <div>
+      <h1>Checkout</h1>
+    </div>
+  );
 }

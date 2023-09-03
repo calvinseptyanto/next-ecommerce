@@ -10,8 +10,8 @@ type CartState = {
   removeProduct: (item: AddCartType) => void;
   paymentIntent: string;
   onCheckout: string;
-  setCheckout: (val: string) => void;
   setPaymentIntent: (val: string) => void;
+  setCheckout: (val: string) => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -41,6 +41,7 @@ export const useCartStore = create<CartState>()(
         }),
       removeProduct: (item) =>
         set((state) => {
+          //Check if the item exists and remove quantity - 1
           const existingItem = state.cart.find(
             (cartItem) => cartItem.id === item.id
           );
@@ -53,14 +54,15 @@ export const useCartStore = create<CartState>()(
             });
             return { cart: updatedCart };
           } else {
+            //Remove item from cart
             const filteredCart = state.cart.filter(
               (cartItem) => cartItem.id !== item.id
             );
             return { cart: filteredCart };
           }
         }),
-      setCheckout: (val) => set((state) => ({ onCheckout: val })),
       setPaymentIntent: (val) => set((state) => ({ paymentIntent: val })),
+      setCheckout: (val) => set((state) => ({ onCheckout: val })),
     }),
     { name: "cart-store" }
   )
